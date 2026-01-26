@@ -1,7 +1,7 @@
 from ansi_actions.style import style
 from ansi_actions import cursor
 from terminal.screen import clear_screen
-from terminal.input import init_key_input, get_key_codes, poll_key_press
+from terminal.input import init_key_input, get_key_codes, poll_key_press, pull_input
 from utils.utilities import LinkedNode, Direction, get_direction_vectors
 
 from typing import Dict, Tuple, Set
@@ -45,6 +45,7 @@ class Snake:
 
         # Initial direction of head
         self.facing = Direction.RIGHT
+        self.old_facing = self.facing
 
         # Initial state
         self.dead = False
@@ -64,7 +65,12 @@ class Snake:
     def move(self) -> None:
         positions: Set[Tuple[int, int]] = {}
         segment: Segment = self.butt
+
+        # Clear butt
+        cursor.cursor_set(*segment.get_position())
+        print(" ", end="")
         while True:
+
             # Snake body handling
             if segment.next != None:
                 segment.set_position(segment.next.get_position())
@@ -73,12 +79,17 @@ class Snake:
 
             # Snake head handling
             segment.move(self.facing)
+            self.old_facing = self.facing
 
             # Check collide
             # TODO: move to main game loop
             if segment.get_position() in positions:
                 self.dead = True
             break
+        # Clear Head
+        cursor.cursor_set(*segment.get_position())
+        print(" ", end="")
+        print(end="", flush=True)
 
 
 key_map: Dict[str, str] = {
@@ -86,12 +97,12 @@ key_map: Dict[str, str] = {
     "down": Direction.DOWN,
     "left": Direction.LEFT,
     "right": Direction. RIGHT,
-    "tab": "q"
+    "tab": "q",
+    "a": "grow"
 }
 
 
 def draw(snake: Snake) -> None:
-    clear_screen()
     for seg in map(lambda x: x.get_position(), snake.get_segments()):
         cursor.cursor_set(seg[0], seg[1])
         print(style("o", "green"), end="")
@@ -100,24 +111,42 @@ def draw(snake: Snake) -> None:
 
 quit_game = threading.Event()
 choice = None
+key_in = init_key_input()
 
 
 def tick_snake(snake):
+    global choice
     while not quit_game.is_set():
-        time.sleep(0.5)
+        time.sleep(0.2)
         snake.move()
         draw(snake)
 
 
 def handle_game(snake):
     while not quit_game.is_set():
+        choice = pull_input(key_in, flush=(len(key_in["input_queue"]) > 2))
+        if choice:
+            choice = choice[0]
+        try:
+            choice = key_map[choice]
+        except KeyError:
+            continue
         # Handle input
         if choice == None:
             continue
         if choice == "q":
             break
+        if choice == "grow":
+            snake.add_segment()
+            continue
 
         # Handle updates
+        current_facing = get_direction_vectors()[snake.old_facing]
+        next_facing = get_direction_vectors()[choice]
+        if not any((current_facing[0] + next_facing[0], current_facing[1] + next_facing[1])):
+            continue
+
+        # Update snake
         snake.facing = choice
         if snake.dead:
             print(style("Dead", "red"))
@@ -127,7 +156,6 @@ def handle_game(snake):
 
 def handle_input():
     global choice
-    key_in = init_key_input()
     while not quit_game.is_set():
         pressed = poll_key_press(key_in)
         try:
@@ -152,6 +180,7 @@ def main():
     t = threading.Thread(target=tick_snake, args=(snake,))
     threads.append(t)
 
+    clear_screen()
     for t in threads:
         t.start()
 
