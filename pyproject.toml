@@ -11,4 +11,4 @@ version = "0.1.0"
 description = "A healthy snac for the snak"
 authors = [{name = "Alex Lu", email = "mealex2007@gmail.com"}]
 license = {text = "MIT"}
-dependencies = [ ]
+dependencies = [ "getch; os_name != 'nt'" ]
