@@ -2,7 +2,50 @@
 Miscellaneous tools.
 """
 import re
-from typing import Any
+from typing import Any, Dict
+from enum import Enum
+
+
+class Direction(Enum):
+    UP = 1
+    DOWN = 2
+    LEFT = 3
+    RIGHT = 4
+
+
+def get_direction_vectors() -> Dict[int, tuple]:
+    """
+    Return a dictionary of Directions and their corresponding Vector2s.
+
+    :postcondition: get a dictionary of Directions and their corresponding Vector2s
+    :return: a dictionary of Directions and their corresponding Vector2s
+
+    >>> get_direction_vectors() == {
+    ...    Direction.UP: (0, -1),
+    ...    Direction.DOWN: (0, 1),
+    ...    Direction.LEFT: (-1, 0),
+    ...    Direction.RIGHT: (1, 0)}
+    True
+    """
+    return {
+        Direction.UP: (0, -1),
+        Direction.DOWN: (0, 1),
+        Direction.LEFT: (-1, 0),
+        Direction.RIGHT: (1, 0)
+    }
+
+
+class LinkedNode:
+    def __init__(self, value: Any, next_node: "LinkedNode"=None) -> None:
+        self.value = value
+        self.next = next_node
+
+    def length(self) -> int:
+        counter: int = 1
+        node: LinkedNode = self.next
+        while node.next is not None:
+            counter += 1
+        return counter
 
 
 def get_escape_codes_indices(text: str) -> list:
@@ -146,29 +189,6 @@ def targets_with_key(key_name: Any, *targets: dict) -> tuple:
     True
     """
     return tuple(filter(lambda target: key_name in target.keys(), targets))
-
-
-def get_direction_vectors() -> dict:
-    """
-    Return a dirctionary of directions names as vectors.
-
-    A vector is of tuple of integers with the form (<x-value>, <y-value>).
-
-    :postcondition: get a dictionary of directions and their corresponding vector tuples
-    :return: a dictionary of two integers representing the corresponding vector of the move direction, <move>
-
-    >>> get_direction_vectors() == {
-    ...     "up": (0, -1),
-    ...     "left": (-1, 0),
-    ...     "right": (1, 0),
-    ...     "down": (0, 1)}
-    True
-    """
-    return {
-        "up": (0, -1),
-        "left": (-1, 0),
-        "right": (1, 0),
-        "down": (0, 1)}
 
 
 def main():

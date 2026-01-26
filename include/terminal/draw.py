@@ -3,7 +3,7 @@ Drawing and animating to the terminal.
 """
 from ansi_actions import cursor
 from terminal.screen import clear_screen
-from terminal.utilities import remove_escape_codes, get_escape_codes_indices
+from utils.utilities import remove_escape_codes, get_escape_codes_indices
 
 
 def create_text_area(column, row, width, height, text=""):

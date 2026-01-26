@@ -3,11 +3,10 @@ Option menus.
 """
 from collections import deque
 
-from game.sound.effects import get_effects
-from game.terminal.draw import create_text_area, draw_text_box
-from game.terminal.input import init_key_input, pull_input
-from game.terminal.screen import clear_screen, get_screen_size
-from game.utilities import longest_string, remove_escape_codes
+from terminal.draw import create_text_area, draw_text_box
+from terminal.input import init_key_input, pull_input
+from terminal.screen import clear_screen, get_screen_size
+from utils.utilities import longest_string, remove_escape_codes
 
 
 def create_menu(column, row, *options, default=0):
@@ -60,8 +59,7 @@ def create_menu(column, row, *options, default=0):
             next_option()
         elif key_press in (" ", "enter"):
             return options[selected_index]
-        else:
-            get_effects()["honk"].play()
+
         draw_menu()
         return None
 
