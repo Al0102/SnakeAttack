@@ -20,6 +20,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
     server.listen()
     print(f"Listening on {HOST_IP}:{PORT}...")
 
+    connection, address = server.accept()
 
     with connection:
         print(f"Connected at {address}")
