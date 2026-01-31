@@ -18,6 +18,7 @@ def create_menu(column, row, *options, default=0):
         "next_option": <function>
         "previous_option": <function>
         "draw_menu": <function>
+        "update_menu": <function>
     }
 
     :param column: a positive integer greater than 0 representing
@@ -107,6 +108,17 @@ def create_menu(column, row, *options, default=0):
 
 
 def get_centered_menu_position(*options):
+    """
+    Get a centered menu's position.
+
+    :param options: strings representing the option names pf the menu
+    :precondition: options must contain strings
+    :postcondition: get the column and row position of the menu
+                    centered in the terminal
+    :return: a tuple of two integers representing the centered menu's
+             column and row position in the terminal of form:
+                (menu_column, menu_row)
+    """
     options = list(map(remove_escape_codes, options))
     menu_column = get_screen_size()[0] // 2 - longest_string(options)[1] - 4
     menu_row = (get_screen_size()[1] - len(options)) // 2
