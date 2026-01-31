@@ -2,12 +2,7 @@ import socket
 import json
 
 HOST_IP = "127.0.0.1"
-PORT = 65432
-
-
-# TODO Take multiple actions if longer than deltaT (or certain length of actions) from queue
-def process_input(data):
-    pass
+PORT = 63337
 
 
 def wait_for_client(server):
@@ -26,27 +21,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
     print(f"Listening on {HOST_IP}:{PORT}...")
 
 
-    clients = []
-    while len(clients) < 2:
-        clients.append(wait_for_client(server))
-        print(f"{len(clients)}/3 connected")
-        for client_id, client in enumerate(clients):
-            data = client["connection"].recv(1024)
-            client["connection"].sendall(f"{client_id + 1}/3 connected".encode("utf-8"))
-    print("Starting...")
+    with connection:
+        print(f"Connected at {address}")
+        connection.send(str.encode(f"Connected to: {HOST_IP}: {PORT}"))
+        while True:
+            # Recieve client data (bytes)
+            data = connection.recv(2048)
+            if not data:
+                break
+            connection.sendall(str.encode("--reply--"))
 
-    for client_id, client in enumerate(clients):
-        with client["connection"]:
-            print(f"Connected at {client['address']}")
-
-#    while True:
-#        # Recieve client data (bytes)
-#
-#        # Empty bytes object siginifying client disconnect
-#        if not data:
-#            break
-#
-#        # Send data to client (bytes)
-#        connection.sendall(data)
 
 print("Server stopped.")
