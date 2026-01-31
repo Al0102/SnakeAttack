@@ -92,6 +92,12 @@ class Snake:
         print(end="", flush=True)
 
 
+def convert_snake_to_json_dict(snake: Snake) -> Dict[str: Any]:
+    return {
+            "segments": [segment.get_position() for segment in snake.get_segments()],
+            "facing": snake.facing}
+
+
 key_map: Dict[str, str] = {
     "up": Direction.UP,
     "down": Direction.DOWN,
