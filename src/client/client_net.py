@@ -55,14 +55,19 @@ class Client:
             print(style(f"Error while sending: {socket_error}", Style.RED), file=stderr)
             return None
         else:
-            return self.client.recv(2048).decode()
+            return self.client.recv(2048).decode("utf-8")
 
 
 def main():
     client = Client()
     try:
         print(client.connect())
-        print(client.send("Hello world"))
+        message = ""
+        data = True
+        while message != "q" and data:
+            message = input("> ")
+            data = client.send(message)
+            print(data)
     finally:
         client.client.close()
 
