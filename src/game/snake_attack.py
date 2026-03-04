@@ -5,17 +5,19 @@ from terminal.screen import get_screen_size, clear_screen
 from terminal.input import init_key_input, poll_key_press
 from client.client_net import Client
 
-from scenes.scenes import Scenem SCENES
-from scenes import main_menu.MainMenu,
-                   fof.FourOhFour,
-                   root.QuitGame
-
+from game.scenes.scene import Scene, SCENES
+from game.scenes.main_menu import MainMenu
+from game.scenes.fof import FourOhFour 
+from game.scenes.root import QuitGame 
+from game.scenes.snake_attack import SnakeAttackPlay
 
 class Game:
     SCENES: Dict[int, Scene] = {
-        SCENES.MainMenu: main_menu.MainMenu,
-        SCENES.FourOhFour: fof.FourOhFour,
-        SCENES.QuitGame: root.QuitGame
+        SCENES.MainMenu: MainMenu,
+        SCENES.FourOhFour: FourOhFour,
+        SCENES.QuitGame: QuitGame,
+        SCENES.SnakeAttackPlay: SnakeAttackPlay
+
     }
 
     def __init__(self):
@@ -23,8 +25,7 @@ class Game:
         self.running = True
 
         self.key_input = init_key_input()
-
-        self.client = None
+        self.pressed = []
 
     def start_loop(self):
         while self.running:
@@ -33,18 +34,17 @@ class Game:
             if pressed == "q":
                 break
             # Scene handling
+            self.current_scene.start()
             next_scene = self.current_scene.update(pressed)
             if not next_scene:
                 continue
+            self.current_scene.end()
             if next_scene == SCENES.QuitGame:
                 break
             elif next_scene in Game.SCENES.keys():
                 self.current_scene = Game.SCENES[next_scene]()
             else:
                 self.current_scene = Game.SCENES[SCENES.FourOhFour]()
-
-    def attempt_connection(self):
-        self.client = Client()
 
 
 def main():

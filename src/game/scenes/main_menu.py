@@ -3,11 +3,12 @@ from typing import Dict, Any
 
 # tGame
 from ansi_actions.style import style, Style
+from terminal.screen import get_screen_size, clear_screen
 from terminal.draw import create_text_area, draw_text_box
 from terminal.menu import create_menu
 
 # Snake attack
-from scenes import Scene, SCENES
+from game.scenes.scene import Scene, SCENES
 
 
 class MainMenu(Scene):
@@ -32,7 +33,7 @@ class MainMenu(Scene):
         choice = self.menu["update_menu"](key_press)
         match choice:
             case "START":
-                return SCENES.FourOhFour
+                return SCENES.SnakeAttackPlay
             case "SETTINGS":
                 return SCENES.FourOhFour
             case "QUIT":

@@ -1,4 +1,4 @@
-from scenes import Scene
+from game.scenes.scene import Scene
 
 
 class QuitGame(Scene):

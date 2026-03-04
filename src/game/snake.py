@@ -111,8 +111,12 @@ key_map: Dict[str, str] = {
 }
 
 
-def draw(snake: Snake) -> None:
-    for seg in map(lambda x: x.get_position(), snake.get_segments()):
+def draw(snake: Snake | list) -> None:
+    if type(snake) is Snake:
+        segments = map(lambda x: x.get_position(), snake.get_segments())
+    else:
+        segments = map(lambda pos: pos, snake)
+    for seg in segments:
         cursor.cursor_set(seg[0], seg[1])
         print(style("o", "green"), end="")
     print("", end="", flush=True)

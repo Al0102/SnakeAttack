@@ -1,8 +1,11 @@
+# tGame
 from ansi_actions.style import style, Style
+from terminal.menu import create_menu, get_centered_menu_position
 from terminal.draw import create_text_area, draw_text_box
 from terminal.screen import get_screen_size, clear_screen
 
-from scenes import Scene, SCENES
+# SnakeAttack
+from game.scenes.scene import Scene, SCENES
 
 class FourOhFour(Scene):
     def __init__(self) -> None:
