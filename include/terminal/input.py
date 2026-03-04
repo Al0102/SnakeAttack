@@ -98,6 +98,7 @@ def init_key_input():
         key_codes = get_key_codes("posix")
 
         def key_get(input_info):
+            # TODO: kbhit for getch
             code = getch()
             if code == input_info["key_codes"]["escape"]:
                 code = getch()

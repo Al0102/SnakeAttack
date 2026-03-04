@@ -1,3 +1,6 @@
+import threading
+import time
+
 from ansi_actions.style import style, Style
 from terminal.menu import create_menu, get_centered_menu_position
 from terminal.draw import create_text_area, draw_text_box
@@ -25,12 +28,29 @@ class Game:
         self.running = True
 
         self.key_input = init_key_input()
-        self.pressed = []
+        self.pressed_keys = [None, None]
+
+    def start_input(self):
+        while self.running:
+            time.sleep(0.1)
+            self.pressed_keys[1] = poll_key_press(self.key_input)
+            if self.pressed_keys[1] is not None:
+                self.pressed_keys[0] = self.pressed_keys[1] 
+            else:
+                self.pressed_keys[0] = None
+                self.pressed_keys[1] = None
+            print(self.pressed_keys)
 
     def start_loop(self):
+        input_thread = threading.Thread(target=self.start_input)
+        input_thread.start()
+
         while self.running:
+            time.sleep(0.5)
             # Get input
-            pressed = poll_key_press(self.key_input)
+            pressed = self.pressed_keys[0]
+            if self.pressed_keys[0]:
+                self.pressed_keys[0] = None
             if pressed == "q":
                 break
             # Scene handling
@@ -45,6 +65,8 @@ class Game:
                 self.current_scene = Game.SCENES[next_scene]()
             else:
                 self.current_scene = Game.SCENES[SCENES.FourOhFour]()
+        self.running = False
+        input_thread.join()
 
 
 def main():
