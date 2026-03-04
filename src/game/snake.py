@@ -4,7 +4,7 @@ from terminal.screen import clear_screen
 from terminal.input import init_key_input, get_key_codes, poll_key_press, pull_input
 from utils.utilities import LinkedNode, Direction, get_direction_vectors
 
-from typing import Dict, Tuple, Set
+from typing import Dict, Tuple, Set, Any
 from enum import Enum
 import threading
 import time
@@ -62,6 +62,9 @@ class Snake:
         new_butt = Segment(self.butt.get_position(), self.butt)
         self.butt = new_butt
 
+    def set_facing(self, direction: Direction):
+        self.facing = direction
+
     def move(self) -> None:
         positions: Set[Tuple[int, int]] = {}
         segment: Segment = self.butt
@@ -92,9 +95,9 @@ class Snake:
         print(end="", flush=True)
 
 
-def convert_snake_to_json_dict(snake: Snake) -> Dict[str: Any]:
+def convert_snake_to_json_dict(snake: Snake) -> Dict[str, Any]:
     return {
-            "segments": [segment.get_position() for segment in snake.get_segments()],
+            "segments": list(map(lambda segment: segment.get_position(), snake.get_segments())),
             "facing": snake.facing}
 
 
@@ -149,7 +152,7 @@ def handle_game(snake):
         # Handle updates
         current_facing = get_direction_vectors()[snake.old_facing]
         next_facing = get_direction_vectors()[choice]
-        if not any((current_facing[0] + next_facing[0], current_facing[1] + next_facing[1])):
+        if not any([current_facing[0] + next_facing[0], current_facing[1] + next_facing[1]]):
             continue
 
         # Update snake
