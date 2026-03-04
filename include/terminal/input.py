@@ -91,7 +91,7 @@ def init_key_input():
     """
     if os.name == "posix":
         try:
-            from getch import getch
+            from getch import getch, kbhit
         except ImportError:
             print("'getch' module not found: do 'pip install'")
             return None
@@ -111,10 +111,12 @@ def init_key_input():
             return code
 
     elif os.name == "nt":
-        from msvcrt import getwch
+        from msvcrt import getwch, kbhit
         key_codes = get_key_codes("nt")
 
         def key_get(input_info):
+            if not kbhit():
+                return None
             code = getwch()
             if code == input_info["key_codes"]["extend"]:
                 code = "extend" + getwch()

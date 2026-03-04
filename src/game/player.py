@@ -6,10 +6,10 @@ from utils.utilities import Direction
 
 class Player:
     DEFAULT_KEY_MAP = {
-        "up": Direction.UP,
-        "down": Direction.DOWN,
-        "left": Direction.LEFT,
-        "right": Direction.RIGHT,
+        "w": Direction.UP,
+        "s": Direction.DOWN,
+        "a": Direction.LEFT,
+        "d": Direction.RIGHT,
         "tab": "quit",
         "a": "grow"}
 
