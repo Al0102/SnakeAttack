@@ -85,7 +85,7 @@ def main():
         # start_game
         data = client.send("waiting...")
         while data != "start_game":
-            print (data)
+            print(data)
             if not data:
                 return
             if data == "kick":
