@@ -1,7 +1,7 @@
 """
 OS dependent inputs with getch and msvcrt.
 """
-import os
+import os, sys
 from collections.abc import Callable
 from string import printable
 from ansi_actions import cursor
@@ -78,6 +78,7 @@ def get_key_codes(system=os.name):
         return None
 
 
+@DeprecationWarning
 def init_key_input():
     """
     Return a dictionary representing the info needed for "keyboard" input in the terminal
@@ -90,15 +91,19 @@ def init_key_input():
     :return: a dictionary representing the info needed for "keyboard" input in the terminal
     """
     if os.name == "posix":
+        import select, termios
         try:
-            from getch import getch, kbhit
+            from getch import getch
         except ImportError:
             print("'getch' module not found: do 'pip install'")
             return None
         key_codes = get_key_codes("posix")
-
         def key_get(input_info):
-            # TODO: kbhit for getch
+            if not select.select(
+                    [sys.stdin], [], [], 0) == (
+                    [sys.stdin], [], []):
+                return None
+            print("yg")
             code = getch()
             if code == input_info["key_codes"]["escape"]:
                 code = getch()
@@ -138,6 +143,7 @@ def init_key_input():
     }
 
 
+@DeprecationWarning
 def poll_key_press(input_info):
     """
     Poll the next key press.
@@ -153,6 +159,7 @@ def poll_key_press(input_info):
     return inputted
 
 
+@DeprecationWarning
 def pull_input(input_info, amount=1, flush=False):
     """
     Pop the next <amount> inputs in the queue.
