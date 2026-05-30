@@ -4,49 +4,40 @@ Option menus.
 from collections import deque
 
 from terminal.draw import create_text_area, draw_text_box
-from terminal.input import init_key_input, pull_input
+from terminal.input.old_input import init_key_input, pull_input
 from terminal.screen import clear_screen, get_screen_size
 from utils.utilities import longest_string, remove_escape_codes
 
 
-def create_menu(column, row, *options, default=0):
-    """
-    Generate a menu and its control functions.
+class Menu:
+    def __init__(self, column, row, *options, default=0):
+        """
+        Generate a menu.
 
-    Return a dictionary of form:
-    {
-        "next_option": <function>
-        "previous_option": <function>
-        "draw_menu": <function>
-        "update_menu": <function>
-    }
+        :param column: a positive integer greater than 0 representing
+                            the horizontal position to draw the menu at
+        :param row: a positive integer greater than 0 representing
+                        the vertical position to draw the menu at
+        :param options: strings representing the menu's option names
+        :param default: (default 0) an integer representing the index of the default selected option
+        :precondition: center_column must be a positive integer greater than 0
+        :precondition: center_row must be a positive integer greater than 0
+        :precondition: options must only hold strings
+        :precondition: default must be an integer
+        :precondition: options must hold at least one string
+        :postcondition: generate a menu
+        """
+        self.selected_index = len(options) // 2
+        self.longest_option = longest_string(options)[1]
+        self.options = deque(options)
+        self.options.rotate(self.selected_index - default)
+        self.text_area = create_text_area(
+            column=min(column, get_screen_size()[0] - self.longest_option - 4),
+            row=min(row, get_screen_size()[1] - len(options)),
+            width=self.longest_option + 4, height=len(options) + 1,
+            text="")
 
-    :param column: a positive integer greater than 0 representing
-                          the horizontal position to draw the menu at
-    :param row: a positive integer greater than 0 representing
-                       the vertical position to draw the menu at
-    :param options: strings representing the menu's option names
-    :param default: (default 0) an integer representing the index of the default selected option
-    :precondition: center_column must be a positive integer greater than 0
-    :precondition: center_row must be a positive integer greater than 0
-    :precondition: options must only hold strings
-    :precondition: default must be an integer
-    :precondition: options must hold at least one string
-    :postcondition: generate a menu and its control functions
-    :postcondition: generate a menu and its control functions
-    :return: a dictionary representing a menu's control functions
-    """
-    selected_index = len(options) // 2
-    longest_option = longest_string(options)[1]
-    options = deque(options)
-    options.rotate(selected_index - default)
-    text_area = create_text_area(
-        column=min(column, get_screen_size()[0] - longest_option - 4),
-        row=min(row, get_screen_size()[1] - len(options)),
-        width=longest_option + 4, height=len(options) + 1,
-        text="")
-
-    def update_menu(key_press):
+    def update_menu(self, key_press):
         """
         Update the menu based on the input.
 
@@ -55,16 +46,16 @@ def create_menu(column, row, *options, default=0):
         :postcondition: draw the menu to the terminal
         """
         if key_press == "up":
-            previous_option()
+            self.previous_option()
         elif key_press == "down":
-            next_option()
+            self.next_option()
         elif key_press in (" ", "enter"):
-            return options[selected_index]
+            return self.options[self.selected_index]
 
-        draw_menu()
+        self.draw_menu()
         return None
 
-    def draw_menu():
+    def draw_menu(self):
         """
         Draw the menu.
 
@@ -72,13 +63,13 @@ def create_menu(column, row, *options, default=0):
         :postcondition: draw the menu to terminal
         :postcondition: menu is vertical
         """
-        nonlocal text_area
-        options_draw = options.copy()
-        options_draw[selected_index] = f"< {options_draw[selected_index]} >"
-        text_area["text"] = '\n'.join(map(lambda option: option.ljust(longest_option + 4), options_draw))
-        draw_text_box(text_area=text_area, overwrite=True)
+        options_draw = self.options.copy()
+        options_draw[self.selected_index] = f"< {options_draw[self.selected_index]} >"
+        self.text_area["text"] = '\n'.join(
+            map(lambda option: option.ljust(self.longest_option + 4), options_draw))
+        draw_text_box(text_area=self.text_area, overwrite=True)
 
-    def next_option():
+    def next_option(self):
         """
         Shift the selected menu option to one forward.
 
@@ -86,10 +77,9 @@ def create_menu(column, row, *options, default=0):
         :postcondition: shift the selected menu option to one forward
         :postcondition: the selected menu option cycles
         """
-        nonlocal options
-        options.rotate(-1)
+        self.options.rotate(-1)
 
-    def previous_option():
+    def previous_option(self):
         """
         Shift the selected menu option to one previous.
 
@@ -97,14 +87,7 @@ def create_menu(column, row, *options, default=0):
         :postcondition: shift the selected menu option to one previous
         :postcondition: the selected menu option cycles
         """
-        nonlocal options
-        options.rotate(1)
-
-    return {
-        "next_option": next_option,
-        "previous_option": previous_option,
-        "draw_menu": draw_menu,
-        "update_menu": update_menu}
+        self.options.rotate(1)
 
 
 def get_centered_menu_position(*options):
@@ -130,11 +113,11 @@ def main():
     Drive the program.
     """
     key_input = init_key_input()
-    test_menu = create_menu(
+    test_menu = Menu(
         5, 2,
         "Say Hi", "Say Bye", "Exit")
     clear_screen()
-    test_menu["draw_menu"]()
+    test_menu.draw_menu()
     while True:
         if key_input["key_get"](key_input) in ("escape", "tab"):
             return
