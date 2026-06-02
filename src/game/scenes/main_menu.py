@@ -3,12 +3,14 @@ from typing import Dict, Any
 
 # tGame
 from ansi_actions.style import style, Style
-from terminal.screen import get_screen_size, clear_screen
+from terminal.input import KeyInput
+from terminal.screen import get_screen_size
 from terminal.draw import create_text_area, draw_text_box
-from terminal.menu import create_menu
+from terminal.menu import Menu
 
 # Snake attack
-from game.scenes.scene import Scene, SCENES
+from game.root import Root
+from game.scenes.scene import Scene, SCENE, SceneSwitchType
 
 
 class MainMenu(Scene):
@@ -16,8 +18,10 @@ class MainMenu(Scene):
         "START",
         "SETTINGS",
         "QUIT")
+
     def __init__(self) -> None:
-        self.menu: Dict[str, callable] = create_menu(
+        super().__init__()
+        self.menu: Menu = Menu(
             2, (get_screen_size()[1] - len(MainMenu.OPTIONS) - 2),
             *MainMenu.OPTIONS)
 
@@ -27,17 +31,32 @@ class MainMenu(Scene):
             text=style("Snake Attack!",
                   Style.GREEN, Style.UNDERLINE, Style.BOLD, Style.SLOW_BLINK))
 
-    def update(self, key_press: str) -> Scene | None:
-        clear_screen()
-        draw_text_box(text_area=self.title)
-        choice = self.menu["update_menu"](key_press)
-        match choice:
+    @staticmethod
+    def get_name():
+        return SCENE.MainMenu
+
+    def start(self) -> None:
+        self.menu.reset_option()
+        self.menu.draw_menu()
+        draw_text_box(text_area=self.title, overwrite=True)
+
+    def update(self) -> Scene | None:
+        _key_press = KeyInput().pull_key()
+        if not _key_press:
+            return None
+
+        # Get next scene
+        _choice = self.menu.update_menu(_key_press)
+        match _choice:
             case "START":
-                return SCENES.SnakeAttackPlay
+                Root().switch_scene(SceneSwitchType.TOP, SCENE.FourOhFour)
             case "SETTINGS":
-                return SCENES.FourOhFour
+                Root().switch_scene(SceneSwitchType.TOP, SCENE.FourOhFour)
             case "QUIT":
-                return SCENES.QuitGame
+                Root().switch_scene(SceneSwitchType.TOP, SCENE.QuitGame)
             case _:
                 return None
+
+    def end(self):
+        return super().end()
 

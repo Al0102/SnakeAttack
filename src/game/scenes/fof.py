@@ -1,11 +1,17 @@
+# Other
+from typing import Any, Dict
+
 # tGame
-from ansi_actions.style import style, Style
-from terminal.menu import create_menu, get_centered_menu_position
+from ansi_actions.style import reset_style, style, Style
+from terminal.input import KeyInput
+from terminal.menu import get_centered_menu_position
 from terminal.draw import create_text_area, draw_text_box
-from terminal.screen import get_screen_size, clear_screen
+from terminal.screen import clear_screen
 
 # SnakeAttack
-from game.scenes.scene import Scene, SCENES
+from game.root import Root
+from game.scenes.scene import Scene, SCENE, SceneSwitchType
+
 
 class FourOhFour(Scene):
     def __init__(self) -> None:
@@ -15,18 +21,31 @@ class FourOhFour(Scene):
             *get_centered_menu_position(
                 scene_not_found_message,
                 instructions_message),
-            32, 2,
+            len(instructions_message), 2,
             style(scene_not_found_message, Style.RED) + "\n" +
             style(instructions_message,
                   Style.YELLOW, Style.RAPID_BLINK))
 
         self.just_entered = True
 
-    def update(self, key_press: str) -> Scene | None:
+    @staticmethod
+    def get_name():
+        return SCENE.FourOhFour
+
+    def start(self) -> None:
         clear_screen()
         draw_text_box(text_area=self.instructions, flush_output=True)
-        if self.just_entered:
+        return super().start()
+
+    def update(self) -> SCENE | None:
+        _key = KeyInput().get_key()
+        if self.just_entered and _key:
             self.just_entered = False
             return None
-        return SCENES.MainMenu
+        Root().switch_scene(SceneSwitchType.POP)
+        return SCENE.MainMenu
 
+    def end(self) -> None:
+        clear_screen()
+        reset_style()
+        return super().end()

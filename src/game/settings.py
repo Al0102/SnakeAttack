@@ -1,6 +1,8 @@
 from typing import Dict
 from utils.utilities import Direction
 
+from game.scenes.scene import SCENE
+
 
 class Settings:
     """
@@ -21,4 +23,21 @@ class Settings:
 
         "force_quit": "4",
     }
+
+    # Scenes
+    SCENE_MAIN_ENTRY = SCENE.MainMenu
+
+    # Frames
+    DEFAULT_FPS = 30
+
+
+    def __init__(
+            self,
+            action_map: Dict[str, tuple] = DEFAULT_ACTION_MAP,
+            scene_main_entry: SCENE = SCENE_MAIN_ENTRY,
+            fps: int = DEFAULT_FPS
+    ):
+        self.action_map = action_map
+        self.scene_main_entry = scene_main_entry
+        self.fps = fps
 
