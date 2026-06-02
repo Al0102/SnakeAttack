@@ -4,7 +4,7 @@ Option menus.
 from collections import deque
 
 from terminal.draw import create_text_area, draw_text_box
-from terminal.input.old_input import init_key_input, pull_input
+from terminal.input.input import init_key_input, pull_input
 from terminal.screen import clear_screen, get_screen_size
 from utils.utilities import longest_string, remove_escape_codes
 
@@ -28,6 +28,7 @@ class Menu:
         :postcondition: generate a menu
         """
         self.selected_index = len(options) // 2
+        self.reset_index = 0
         self.longest_option = longest_string(options)[1]
         self.options = deque(options)
         self.options.rotate(self.selected_index - default)
@@ -45,15 +46,17 @@ class Menu:
         :postcondition: update the menu
         :postcondition: draw the menu to the terminal
         """
+        _option = None
         if key_press == "up":
             self.previous_option()
         elif key_press == "down":
             self.next_option()
         elif key_press in (" ", "enter"):
-            return self.options[self.selected_index]
-
+            _option = self.options[self.selected_index]
+        else:
+            return None
         self.draw_menu()
-        return None
+        return _option
 
     def draw_menu(self):
         """
@@ -78,6 +81,7 @@ class Menu:
         :postcondition: the selected menu option cycles
         """
         self.options.rotate(-1)
+        self.reset_index = (self.reset_index + 1) % len(self.options)
 
     def previous_option(self):
         """
@@ -88,6 +92,16 @@ class Menu:
         :postcondition: the selected menu option cycles
         """
         self.options.rotate(1)
+        self.reset_index = (self.reset_index - 1) % len(self.options)
+
+    def reset_option(self):
+        """
+        Set the selected menu option to the original.
+
+        :postcondition: the selected menu option is now the original
+        """
+        self.options.rotate(self.reset_index)
+        self.reset_index = 0
 
 
 def get_centered_menu_position(*options):

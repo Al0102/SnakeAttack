@@ -190,6 +190,24 @@ def targets_with_key(key_name: Any, *targets: dict) -> tuple:
     """
     return tuple(filter(lambda target: key_name in target.keys(), targets))
 
+def match_type(test: any, actual: type) -> bool:
+    """
+    Checks whether the type of an object matches a specified type.
+
+    :param test (any): the object to test
+    :param actual (type): the type to test against
+    :precondition: actual must be a type
+    :postcondition: return True if the type of test matches actual
+    :return (bool): whether the type of test matches actual
+
+    >>> match_type(int, type)
+    True
+    >>> match_type("Zeep, Zorp", int)
+    False
+    >>> tuple(map(match_type, ["a", 2], [str, str]))
+    (True, False)
+    """
+    return type(test) is actual
 
 def main():
     """
