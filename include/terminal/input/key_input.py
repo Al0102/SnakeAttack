@@ -25,6 +25,9 @@ class KeyInputBase(metaclass=ABCSingleton):
         self.buffer.append(self.poll())
         return self.buffer[-1]
 
+    def peek_key(self) -> str:
+        return "" if self.buffer == [] else self.buffer[-1]
+
     def pull_key(self) -> str:
         return "" if self.buffer == [] else self.buffer.pop(0)
 
