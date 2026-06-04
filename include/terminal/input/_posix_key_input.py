@@ -1,9 +1,10 @@
 """
-    POSIX key input via termios
+    POSIX key input via termios.
 """
 import select
 import sys
 import termios
+from typing import Self
 
 from terminal.input.key_input import KeyInputBase
 
@@ -12,7 +13,7 @@ class KeyInput(KeyInputBase):
     CONTROL_KEY_MAP = {
         "\x1b": "escape",
         "\x1b[A": "up",
-        "\x1b[B" : "down",
+        "\x1b[B": "down",
         "\x1b[C": "right",
         "\x1b[D": "left",
 
@@ -35,7 +36,7 @@ class KeyInput(KeyInputBase):
     # Source - https://stackoverflow.com/a/31736883
     # Posted by Phylliida, modified by community.
     # Retrieved 2026-05-28, License - CC BY-SA 4.0
-    def __enter__(self) -> any:
+    def __enter__(self) -> Self:
         """
         Saves the old terminal settings and sets non-blocking key inputs.
 

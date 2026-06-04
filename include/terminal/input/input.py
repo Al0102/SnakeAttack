@@ -6,7 +6,7 @@ from collections.abc import Callable
 from string import printable
 from ansi_actions import cursor
 from ansi_actions.style import style
-from terminal.screen import get_screen_size, clear_screen
+from terminal.screen import TerminalScreen
 from terminal.draw import draw_text_box, create_text_area
 
 
@@ -218,7 +218,7 @@ def start_text_input(column: int, row: int, max_width=None, hide=False) -> Calla
     :return: a function representing a text_input prompt for the user
     """
     if not max_width:
-        max_width = get_screen_size()[0] - column - 1
+        max_width = TerminalScreen.get_size()[0] - column - 1
     text_area = create_text_area(column=column, row=row, width=max_width, height=1)
     string_input = []
     # The index being inserted at
@@ -275,7 +275,7 @@ def main():
     """
     Drive the program.
     """
-    clear_screen()
+    TerminalScreen.clear()
     print("Press escape or tab to go to test text_input")
     key_input = init_key_input()
     while True:

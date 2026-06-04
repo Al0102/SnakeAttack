@@ -1,5 +1,9 @@
+"""
+    Windows key input via msvcrt.
+"""
 from msvcrt import getwch, kbhit
 import sys
+from typing import Self
 
 from terminal.input.key_input import KeyInputBase
 
@@ -27,7 +31,7 @@ class KeyInput(KeyInputBase):
         self.key_mash_counter = 0
         self.max_control_code_mash = 5
 
-    def __enter__(self) -> any:
+    def __enter__(self) -> Self:
         """
         Saves the old terminal settings and sets non-blocking key inputs.
 
