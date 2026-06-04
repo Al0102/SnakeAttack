@@ -2,7 +2,7 @@
 Drawing and animating to the terminal.
 """
 from ansi_actions import cursor
-from terminal.screen import clear_screen
+from terminal.screen import TerminalScreen
 from utils.utilities import remove_escape_codes, get_escape_codes_indices
 
 
@@ -157,7 +157,7 @@ def main():
     """
     Drive the program.
     """
-    clear_screen()
+    TerminalScreen.clear()
     draw_text_box(5, 5, 20, 5,
                   "Hello, World\n123456789012345678901234")
     input()

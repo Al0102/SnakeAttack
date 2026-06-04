@@ -116,7 +116,7 @@ def get_styles():
 
 def style(text, *styles, reset=True):
     """
-    Return <text> with the style <type> prepended to it.
+    Return <text> with the <styles> code forms prepended to it.
 
     The optional <reset> will append the ANSI reset code to <text>
 
@@ -140,6 +140,34 @@ def style(text, *styles, reset=True):
         lambda name: get_styles()[name if type(name) == Style else Style[name.upper()]],
         styles))
     new_text = codes + text
+    if reset:
+        new_text += get_styles()[Style.RESET]
+    return new_text
+
+def style_raw(text, *styles, reset=True):
+    """
+    Return <text> with the style <style> prepended to it.
+    Be aware that technically any ANSII code (or string)
+    can be passed as a style, largely intended for semantics.
+
+    The optional <reset> will append the ANSI reset code to <text>
+
+    :param text: a string representing the text to style
+    :param reset: a boolean representing whether to reset the styling after <text>
+    :param styles: strings representing the ANSI escape styles to apply to <text>
+    :precondition: text must be a string representing the text to style
+    :precondition: reset a boolean representing whether to reset the styling after <text>
+    :postcondition: prepend and/or append ANSI codes to style the text when printing
+    :return: a string representing the styled <text> with appropriate ANSI codes prepended/appended to it
+
+    >>> style_raw("This is red", "\x1b[31m")
+    '\\x1b[31mThis is red\\x1b[0m'
+    >>> style_raw("This is bold and blue", "\x1b[1m", "\x1b[34m")
+    '\\x1b[1m\\x1b[34mThis is bold and blue\\x1b[0m'
+    >>> style_raw("This is rgb(2, 44, 67) and not reset", "\x1b[38;2;2;44;67m", reset=False)
+    '\\x1b[38;2;2;44;67mThis is rgb(2, 44, 67) and not reset'
+    """
+    new_text = "".join(styles) + text 
     if reset:
         new_text += get_styles()[Style.RESET]
     return new_text
