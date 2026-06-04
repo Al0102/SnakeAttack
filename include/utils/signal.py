@@ -11,7 +11,6 @@ class Signal:
         self._connections = set()
         self._argument_types = args
         self._keyword_argument_types = kwargs
-        print(args, kwargs)
 
     def connect(self, receiver: Callable) -> None:
         self._connections.add(receiver)

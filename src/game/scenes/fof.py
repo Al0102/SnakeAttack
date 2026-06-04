@@ -6,7 +6,7 @@ from ansi_actions.style import reset_style, style, Style
 from terminal.input import KeyInput
 from terminal.menu import get_centered_menu_position
 from terminal.draw import create_text_area, draw_text_box
-from terminal.screen import clear_screen
+from terminal.screen import TerminalScreen
 
 # SnakeAttack
 from game.root import Root
@@ -33,7 +33,7 @@ class FourOhFour(Scene):
         return SCENE.FourOhFour
 
     def start(self) -> None:
-        clear_screen()
+        TerminalScreen.clear()
         draw_text_box(text_area=self.instructions, flush_output=True)
         return super().start()
 
@@ -46,6 +46,6 @@ class FourOhFour(Scene):
         return SCENE.MainMenu
 
     def end(self) -> None:
-        clear_screen()
+        TerminalScreen.clear()
         reset_style()
         return super().end()

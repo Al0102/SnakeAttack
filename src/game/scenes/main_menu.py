@@ -4,7 +4,7 @@ from typing import Dict, Any
 # tGame
 from ansi_actions.style import style, Style
 from terminal.input import KeyInput
-from terminal.screen import get_screen_size
+from terminal.screen import TerminalScreen
 from terminal.draw import create_text_area, draw_text_box
 from terminal.menu import Menu
 
@@ -22,11 +22,11 @@ class MainMenu(Scene):
     def __init__(self) -> None:
         super().__init__()
         self.menu: Menu = Menu(
-            2, (get_screen_size()[1] - len(MainMenu.OPTIONS) - 2),
+            2, (TerminalScreen.get_size()[1] - len(MainMenu.OPTIONS) - 2),
             *MainMenu.OPTIONS)
 
         self.title: Dict[str, Any] = create_text_area(
-            column=2, row=(get_screen_size()[1] - len(MainMenu.OPTIONS) - 4),
+            column=2, row=(TerminalScreen.get_size()[1] - len(MainMenu.OPTIONS) - 4),
             width=13, height=1,
             text=style("Snake Attack!",
                   Style.GREEN, Style.UNDERLINE, Style.BOLD, Style.SLOW_BLINK))
@@ -53,7 +53,9 @@ class MainMenu(Scene):
             case "SETTINGS":
                 Root().switch_scene(SceneSwitchType.TOP, SCENE.FourOhFour)
             case "QUIT":
-                Root().switch_scene(SceneSwitchType.TOP, SCENE.QuitGame)
+                Root().quit(9)
+                # TODO: Add are you sure popup
+                # Root().switch_scene(SceneSwitchType.TOP, SCENE.QuitGame)
             case _:
                 return None
 

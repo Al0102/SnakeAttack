@@ -5,7 +5,7 @@ from collections import deque
 
 from terminal.draw import create_text_area, draw_text_box
 from terminal.input.input import init_key_input, pull_input
-from terminal.screen import clear_screen, get_screen_size
+from terminal.screen import TerminalScreen
 from utils.utilities import longest_string, remove_escape_codes
 
 
@@ -33,8 +33,8 @@ class Menu:
         self.options = deque(options)
         self.options.rotate(self.selected_index - default)
         self.text_area = create_text_area(
-            column=min(column, get_screen_size()[0] - self.longest_option - 4),
-            row=min(row, get_screen_size()[1] - len(options)),
+            column=min(column, TerminalScreen.get_size()[0] - self.longest_option - 4),
+            row=min(row, TerminalScreen.get_size()[1] - len(options)),
             width=self.longest_option + 4, height=len(options) + 1,
             text="")
 
@@ -117,8 +117,8 @@ def get_centered_menu_position(*options):
                 (menu_column, menu_row)
     """
     options = list(map(remove_escape_codes, options))
-    menu_column = get_screen_size()[0] // 2 - longest_string(options)[1] - 4
-    menu_row = (get_screen_size()[1] - len(options)) // 2
+    menu_column = TerminalScreen.get_size()[0] // 2 - longest_string(options)[1] - 4
+    menu_row = (TerminalScreen.get_size()[1] - len(options)) // 2
     return (menu_column, menu_row)
 
 
@@ -130,7 +130,7 @@ def main():
     test_menu = Menu(
         5, 2,
         "Say Hi", "Say Bye", "Exit")
-    clear_screen()
+    TerminalScreen.clear()
     test_menu.draw_menu()
     while True:
         if key_input["key_get"](key_input) in ("escape", "tab"):
