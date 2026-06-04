@@ -1,7 +1,7 @@
 # General
 
 # tGame
-from terminal.screen import clear_screen
+from terminal.screen import TerminalScreen
 
 # Snake attack
 from client.client_net import Client
@@ -13,7 +13,7 @@ class SnakeAttackPlay(Scene):
         self.game_state = None
 
     def start(self) -> Scene | None:
-        clear_screen()
+        TerminalScreen.clear()
         try:
             data = self.client.connect()
             self.client.send("waiting")

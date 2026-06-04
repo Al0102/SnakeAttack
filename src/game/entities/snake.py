@@ -1,13 +1,11 @@
 from ansi_actions.style import style
 from ansi_actions import cursor
-from terminal.screen import clear_screen
-from terminal.input import init_key_input, get_key_codes, poll_key_press, pull_input
+from terminal.screen import TerminalScreen
+from terminal.input.input import init_key_input, get_key_codes, poll_key_press, pull_input
 from utils.utilities import LinkedNode, Direction, get_direction_vectors
 
 from typing import Dict, Tuple, Set, Any
-from enum import Enum
 import threading
-import time
 
 
 class Segment(LinkedNode):
@@ -88,6 +86,7 @@ class Snake:
             # TODO: move to main game loop
             if segment.get_position() in positions:
                 self.dead = True
+                input("Lose")
             break
         # Clear Head
         cursor.cursor_set(*segment.get_position())
@@ -100,84 +99,6 @@ def convert_snake_to_json_dict(snake: Snake) -> Dict[str, Any]:
             "segments": list(map(lambda segment: segment.get_position(), snake.get_segments())),
             "facing": snake.facing}
 
-
-key_map: Dict[str, str] = {
-    "up": Direction.UP,
-    "down": Direction.DOWN,
-    "left": Direction.LEFT,
-    "right": Direction. RIGHT,
-    "tab": "q",
-    "a": "grow"
-}
-
-
-def draw(snake: Snake | list) -> None:
-    if type(snake) is Snake:
-        segments = map(lambda x: x.get_position(), snake.get_segments())
-    else:
-        segments = map(lambda pos: pos, snake)
-    for seg in segments:
-        cursor.cursor_set(seg[0], seg[1])
-        print(style("o", "green"), end="")
-    print("", end="", flush=True)
-
-
-quit_game = threading.Event()
-choice = None
-key_in = init_key_input()
-
-
-def tick_snake(snake):
-    global choice
-    while not quit_game.is_set():
-        time.sleep(0.2)
-        snake.move()
-        draw(snake)
-
-
-def handle_game(snake):
-    while not quit_game.is_set():
-        choice = pull_input(key_in, flush=(len(key_in["input_queue"]) > 2))
-        if choice:
-            choice = choice[0]
-        try:
-            choice = key_map[choice]
-        except KeyError:
-            continue
-        # Handle input
-        if choice == None:
-            continue
-        if choice == "q":
-            break
-        if choice == "grow":
-            snake.add_segment()
-            continue
-
-        # Handle updates
-        current_facing = get_direction_vectors()[snake.old_facing]
-        next_facing = get_direction_vectors()[choice]
-        if not any([current_facing[0] + next_facing[0], current_facing[1] + next_facing[1]]):
-            continue
-
-        # Update snake
-        snake.facing = choice
-        if snake.dead:
-            print(style("Dead", "red"))
-            break
-    quit_game.set()
-
-
-def handle_input():
-    global choice
-    while not quit_game.is_set():
-        pressed = poll_key_press(key_in)
-        try:
-            choice = key_map[pressed]
-        except KeyError:
-            continue
-        if choice == "q":
-            break
-    quit_game.set()
 
 
 def main():
@@ -193,7 +114,7 @@ def main():
     t = threading.Thread(target=tick_snake, args=(snake,))
     threads.append(t)
 
-    clear_screen()
+    TerminalScreen.clear()
     for t in threads:
         t.start()
 
