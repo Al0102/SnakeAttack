@@ -5,6 +5,9 @@ TODO Consider implementing cursor pos save and auto pause on unfocus
 """
 
 
+from utils.utilities import Direction
+
+
 def get_move_options():
     """
     Return a dictionary of available movement options and their ANSI escape code letter.
@@ -108,6 +111,29 @@ def set_cursor_visibility(show):
         print("\033[?25l", end="", flush=True)
 
 
+def cursor_set_ansii(column, row):
+    """
+    Returns the sequence for setting the cursor's position in the terminal.
+
+    The position is 1-based; <column> units from the left and <row> units from the top.
+
+    :param column: an integer representing the new column (horizontal) position of the cursor
+    :param row: an integer representing the new row (vertical) position of the cursor
+    :precondition: column must be a positive integer larger than 0
+    :precondition: row must be a positive integer larger than 0
+    :postcondition: returns the seuqence for setting the cursor's position in the terminal:
+                    <column> units from the left and <row> units from the top
+    :return (str): the ANSII escape sequence for setting the cursor's position
+
+    >>> cursor_set_ansii(1, 1)
+    '\\x1b[1;1H'
+    >>> cursor_set_ansii(8, 90)
+    '\\x1b[90;8H'
+    >>> cursor_set_ansii(15, 1)
+    '\\x1b[1;15H'
+    """
+    return f"\033[{row};{column}{get_move_options()["position"]}"
+
 def cursor_set(column, row):
     """
     Set the cursor's position in the terminal.
@@ -132,6 +158,32 @@ def cursor_set(column, row):
     print(f"\033[{row};{column}{get_move_options()["position"]}", end="", flush=True)
 
 
+def cursor_shift_ansii(direction, amount=1):
+    """
+    Returns the sequence for shifting the cursor's position in the terminal by <amount> in <direction>.
+
+    If no amount is specified, it shifts by one.
+
+    :param direction: a string representing the direction to shift the cursor in
+    :param amount: an integer representing the number of units to shift the cursor by
+    :precondition: direction must be a string in ("up", "down", "left", "right")
+    :precondition: amount must be a positive integer
+    :postcondition: shift the cursor's position in the terminal by <amount> in <direction>
+    :return (str): a newline will not be printed
+
+    >>> cursor_shift_ansii("down")
+    \\x1b[1B'
+    >>> cursor_shift_ansii("right", 5)
+    '\\x1b[5C'
+    >>> cursor_shift_ansii("left", 20)
+    '\\x1b[20D'
+    """
+    if type(direction) is str:
+        _direction = direction.lower()
+    elif type(direction) is Direction:
+        _direction = direction.name.lower()
+    return f"\033[{amount}{get_move_options()[_direction]}"
+
 def cursor_shift(direction, amount=1):
     """
     Shift the cursor's position in the terminal by <amount> in <direction>.
@@ -152,7 +204,7 @@ def cursor_shift(direction, amount=1):
     >>> cursor_shift("left", 20)
     \\x1b[20D
     """
-    print(f"\033[{amount}{get_move_options()[direction]}", end="", flush=True)
+    print(cursor_shift_ansii(direction, amount), end="", flush=True)
 
 
 def main():

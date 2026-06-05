@@ -38,7 +38,6 @@ class Style(Enum):
     BACKGROUND_CYAN = 46
     BACKGROUND_WHITE = 47
 
-
 def get_styles():
     """
     Return a dictionary of available styles and their ANSI escape sequences.
@@ -146,7 +145,7 @@ def style(text, *styles, reset=True):
 
 def style_raw(text, *styles, reset=True):
     """
-    Return <text> with the style <style> prepended to it.
+    Return the text with the styles prepended to it.
     Be aware that technically any ANSII code (or string)
     can be passed as a style, largely intended for semantics.
 
