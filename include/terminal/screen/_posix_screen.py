@@ -68,4 +68,4 @@ class TerminalScreen(TerminalScreenBase):
         :postcondition: returned tuple has form: (<column_within boolean>, <row_within boolean>)
         :return: a tuple of 2 booleans representing whether each value in <point> is within the terminal screen
         """
-        return tuple(map(lambda coordinate: 0 < coordinate[0] <= coordinate[1], zip(point, Screen.TerminalScreen.get_size())))
+        return tuple(map(lambda coordinate: 0 < coordinate[0] <= coordinate[1], zip(point, TerminalScreen.get_size())))

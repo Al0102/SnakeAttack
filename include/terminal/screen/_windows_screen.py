@@ -37,6 +37,9 @@ class TerminalScreen(TerminalScreenBase):
             ~ENABLE_WRAP_AT_EOL_OUTPUT |
             ENABLE_VIRTUAL_TERMINAL_PROCESSING)
         ctypes.windll.kernel32.SetConsoleMode(_handle, _new_settings)
+        
+        # Enter alternate screen buffer
+        print("\033[?1049h", end="", flush=True)
         return self
 
     def __exit__(self, _, __, traceback) -> None:
@@ -45,6 +48,9 @@ class TerminalScreen(TerminalScreenBase):
         """
         if traceback:
             print(traceback, file=sys.stderr)
+        # Restore screen
+        print("\033[?1049h", end="", flush=True)
+        # Restore settings
         _handle = ctypes.windll.kernel32.GetStdHandle(TerminalScreen.STD_OUTPUT_HANDLE)
         ctypes.windll.kernel32.SetConsoleMode(
             _handle, self._old_settings.value)
@@ -99,4 +105,4 @@ class TerminalScreen(TerminalScreenBase):
         :postcondition: returned tuple has form: (<column_within boolean>, <row_within boolean>)
         :return: a tuple of 2 booleans representing whether each value in <point> is within the terminal screen
         """
-        return tuple(map(lambda coordinate: 0 < coordinate[0] <= coordinate[1], zip(point, TerminalScreen.TerminalScreen.get_size())))
+        return tuple(map(lambda coordinate: 0 < coordinate[0] <= coordinate[1], zip(point, TerminalScreen.get_size())))
